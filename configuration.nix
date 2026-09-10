@@ -28,6 +28,7 @@
   nix-homebrew = {
     enable = true;
     inherit user;
+    autoMigrate = true;
   };
   homebrew = {
     enable = true;
@@ -40,6 +41,7 @@
     casks = [
       "wezterm"
       "claude-code"
+      "visual-studio-code"
     ];
   };
 }
