@@ -37,11 +37,13 @@
     onActivation.extraFlags = [ "--force" ];
     brews = [
       "herdr"
+      "node"
     ];
     casks = [
       "wezterm"
       "claude-code"
-      "visual-studio-code"
+      # Long running tasks such as Visual Studio Code is installed once by bootstrap.sh as a plain
+      # /Applications app, not a Homebrew cask. Rebuild must not manage it.
     ];
   };
 }
