@@ -60,26 +60,4 @@ sudo "$NIX_BIN" run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild
 # If this still fails with "nix: command not found", open a new terminal
 # (Determinate adds nix to new shells' PATH) and re-run ./bootstrap.sh.
 
-echo "==> Step 5: Visual Studio Code (bootstrap only, not managed by rebuild)"
-# Installed as a plain /Applications app so Homebrew zap in configuration.nix
-# does not uninstall it on later switches. Skip if the app is already present.
-VSCODE_APP="/Applications/Visual Studio Code.app"
-if [ -d "$VSCODE_APP" ]; then
-  echo "    Visual Studio Code already installed, skipping"
-else
-  VSCODE_TMP="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-vscode.XXXXXX")"
-  cleanup_vscode_tmp() { rm -rf "$VSCODE_TMP"; }
-  trap cleanup_vscode_tmp EXIT
-  echo "    Downloading Visual Studio Code..."
-  curl --proto '=https' --tlsv1.2 --fail --location --progress-bar \
-    -o "$VSCODE_TMP/VSCode.zip" \
-    "https://update.code.visualstudio.com/latest/darwin-universal/stable"
-  unzip -q "$VSCODE_TMP/VSCode.zip" -d "$VSCODE_TMP"
-  sudo mv "$VSCODE_TMP/Visual Studio Code.app" "$VSCODE_APP"
-  sudo xattr -dr com.apple.quarantine "$VSCODE_APP" || true
-  cleanup_vscode_tmp
-  trap - EXIT
-  echo "    Installed to $VSCODE_APP"
-fi
-
 echo "==> Done. Use ./rebuild.sh for future changes."

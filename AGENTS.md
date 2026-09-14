@@ -3,7 +3,7 @@
 Deliberate decisions in this repo - do NOT silently revert them:
 
 - `homebrew.onActivation.cleanup = "zap"` in `configuration.nix` is intentional. It forces the good habit of declaring every Homebrew package in the Nix config instead of installing things ad-hoc, which keeps the machine reproducible. Do not soften it to `uninstall` or `none`. Users are warned about its effect in README.md; this note is for anyone tempted to change the setting itself.
-- Visual Studio Code is a bootstrap-only install in `bootstrap.sh` (plain `/Applications` app, not a Homebrew cask). Do not add `visual-studio-code` to `configuration.nix`; rebuild would then manage or zap it.
+- Visual Studio Code is the Homebrew cask `visual-studio-code` in `configuration.nix`. Rebuild installs it into `/Applications` and zap will not remove it. Do not move it back to a bootstrap-only zip install. `/Applications/Visual Studio Code.app` must be a real app bundle directory, not a Caskroom symlink, or Launchpad/Applications search will miss it. See `docs/vscode-homebrew-cask.md`.
 - Never commit `.no-mistakes/` validation evidence to this public repo. `.no-mistakes/` is gitignored; if a validation pipeline stages evidence into a branch, drop it before merging.
 
 ## Maintaining this file

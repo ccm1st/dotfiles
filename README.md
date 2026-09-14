@@ -24,8 +24,7 @@ If you find a bug, please open a GitHub Issue using the bug report template.
 Running the switch builds:
 
 - System settings (dark mode, key repeat, dock, Finder, trackpad)
-- Homebrew apps (casks and CLI tools)
-- Visual Studio Code (installed once by `bootstrap.sh`, not by `rebuild.sh`)
+- Homebrew apps (casks and CLI tools, including Visual Studio Code in `/Applications`)
 - Nix user packages (ripgrep, fd, fzf, jq, lazygit, Neovim, Hack Nerd Font)
 - Shell (zsh, aliases, starship prompt)
 - Editor (Neovim config with the rose-pine moon theme)
@@ -56,7 +55,7 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` does five things, in order:
+`bootstrap.sh` does four things, in order:
 
 1. Installs Determinate Nix, if it isn't already installed.
 2. Symlinks this repo to `~/.dotfiles`.
@@ -64,8 +63,7 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 3. Checks the `user` configured in `flake.nix` against your actual macOS username, and offers to fix it for you if they differ.
 4. Runs the first `darwin-rebuild switch`.
    It fetches the `darwin-rebuild` tool from the nix-darwin 26.05 release branch, then applies this repo's locked flake config.
-5. Installs Visual Studio Code into `/Applications` if it isn't already there.
-   This is a one-time app install, not a Homebrew cask, so later rebuilds neither update nor zap it.
+   Homebrew then installs Visual Studio Code into `/Applications` from the `visual-studio-code` cask.
 
 After that, `darwin-rebuild` exists and you're on the normal workflow below.
 
@@ -117,11 +115,10 @@ programs.git = {
 ```
 
 **Homebrew cleanup warning:** `configuration.nix` sets `homebrew.onActivation.cleanup = "zap"`.
-That means every time you switch, Homebrew removes any package or cask on your machine that isn't listed in the `brews` and `casks` a
-Visual Studio Code is the exception: `bootstrap.sh` installs it as a plain app, so it is not in `casks` and Homebrew zap does not touch it.
-If a previous generation of this config installed the `visual-studio-code` cask, the next rebuild will zap that cask. Re-run `./bootstrap.sh` afterward to put the app back.rrays in `configuration.nix`.
+That means every time you switch, Homebrew removes any package or cask on your machine that isn't listed in the `brews` and `casks` arrays in `configuration.nix`.
 If you already have Homebrew stuff installed that isn't in that list, the first switch will uninstall it.
 Read through `brews` and `casks` before you run `bootstrap.sh` or `rebuild.sh` for the first time, and add anything you want to keep.
+Visual Studio Code is listed as the `visual-studio-code` cask, so rebuild installs it into `/Applications` and zap will not remove it.
 
 **About `herdr`:** it's in the `brews` list.
 It's a real public Homebrew formula (`brew info herdr` finds it in homebrew-core, no tap needed), so it will install fine.
@@ -143,6 +140,7 @@ If you don't use it, just remove it from `brews` in your copy.
 - `rebuild.sh` - re-applies the config after the first switch.
   Run this every time you make a change.
 - `home/` - the actual config files that get symlinked into place; the sections below explain the shared symlink model and Pi's narrower selective setup.
+- `docs/vscode-homebrew-cask.md` - how the VS Code cask, Applications bundle, and `code` wrapper fit together, including the symlink-vs-real-app failure mode.
 
 ## How the symlinks work
 

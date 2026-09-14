@@ -1,4 +1,4 @@
-{ user, ... }:
+{ user, pkgs, ... }:
 
 {
   # Determinate already manages the Nix daemon, so nix-darwin shouldn't.
@@ -35,6 +35,9 @@
     onActivation.cleanup = "zap";  # remove anything not listed here
     onActivation.autoUpdate = true;
     onActivation.extraFlags = [ "--force" ];
+    caskArgs = {
+      appdir = "/Applications";
+    };
     brews = [
       "herdr"
       "node"
@@ -42,8 +45,17 @@
     casks = [
       "wezterm"
       "claude-code"
-      # Long running tasks such as Visual Studio Code is installed once by bootstrap.sh as a plain
-      # /Applications app, not a Homebrew cask. Rebuild must not manage it.
+      "visual-studio-code"
     ];
   };
+
+  # Homebrew's `code` shim lives in /opt/homebrew/bin, which is not on PATH
+  # unless brew shellenv is sourced. This wrapper keeps `code` on the Nix PATH.
+  environment.systemPackages = [
+    (pkgs.writeShellScriptBin "code" ''
+      exec "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" "$@"
+    '')
+  ];
+
+  
 }
